@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"reflect"
 
@@ -12,11 +14,16 @@ import (
 )
 
 type UserHandler struct {
-	service service.UserService
+	service  service.UserService
+	Validate func(context.Context, interface{}) ([]core.ErrorMessage, error)
+	LogError func(context.Context, string, ...map[string]interface{})
+	jsonMap  map[string]int
 }
 
-func NewUserHandler(service service.UserService) *UserHandler {
-	return &UserHandler{service: service}
+func NewUserHandler(service service.UserService, validate func(context.Context, interface{}) ([]core.ErrorMessage, error), logError func(context.Context, string, ...map[string]interface{})) *UserHandler {
+	userType := reflect.TypeOf(model.User{})
+	_, jsonMap, _ := core.BuildMapField(userType)
+	return &UserHandler{service: service, Validate: validate, LogError: logError, jsonMap: jsonMap}
 }
 
 func (h *UserHandler) All(c echo.Context) error {
@@ -35,6 +42,7 @@ func (h *UserHandler) Load(c echo.Context) error {
 
 	res, err := h.service.Load(c.Request().Context(), id)
 	if err != nil {
+		h.LogError(c.Request().Context(), fmt.Sprintf("Error to get user %s: %s", id, err.Error()))
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	if res == nil {
@@ -52,9 +60,18 @@ func (h *UserHandler) Create(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, er1.Error())
 	}
 
-	res, er2 := h.service.Create(c.Request().Context(), &user)
+	errors, er2 := h.Validate(c.Request().Context(), &user)
 	if er2 != nil {
-		return c.String(http.StatusInternalServerError, er2.Error())
+		h.LogError(c.Request().Context(), er2.Error(), core.MakeMap(user))
+		return c.String(http.StatusInternalServerError, core.InternalServerError)
+	}
+	if len(errors) > 0 {
+		return c.JSON(http.StatusUnprocessableEntity, errors)
+	}
+
+	res, er3 := h.service.Create(c.Request().Context(), &user)
+	if er3 != nil {
+		return c.String(http.StatusInternalServerError, er3.Error())
 	}
 	if res > 0 {
 		return c.JSON(http.StatusCreated, user)
@@ -84,9 +101,18 @@ func (h *UserHandler) Update(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Id not match")
 	}
 
-	res, er2 := h.service.Update(c.Request().Context(), &user)
+	errors, er2 := h.Validate(c.Request().Context(), &user)
 	if er2 != nil {
-		return c.String(http.StatusInternalServerError, er2.Error())
+		h.LogError(c.Request().Context(), er2.Error(), core.MakeMap(user))
+		return c.String(http.StatusInternalServerError, core.InternalServerError)
+	}
+	if len(errors) > 0 {
+		return c.JSON(http.StatusUnprocessableEntity, errors)
+	}
+
+	res, er3 := h.service.Update(c.Request().Context(), &user)
+	if er3 != nil {
+		return c.String(http.StatusInternalServerError, er3.Error())
 	}
 	if res > 0 {
 		return c.JSON(http.StatusOK, user)
@@ -121,9 +147,19 @@ func (h *UserHandler) Patch(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, er1.Error())
 	}
 
-	res, er2 := h.service.Patch(r.Context(), json)
+	errors, er2 := h.Validate(c.Request().Context(), &user)
 	if er2 != nil {
-		return c.String(http.StatusInternalServerError, er2.Error())
+		h.LogError(c.Request().Context(), er2.Error(), core.MakeMap(user))
+		return c.String(http.StatusInternalServerError, core.InternalServerError)
+	}
+	errors = core.RemoveRequiredError(errors)
+	if len(errors) > 0 {
+		return c.JSON(http.StatusUnprocessableEntity, errors)
+	}
+
+	res, er3 := h.service.Patch(r.Context(), json)
+	if er3 != nil {
+		return c.String(http.StatusInternalServerError, er3.Error())
 	}
 	if res > 0 {
 		return c.JSON(http.StatusOK, json)
@@ -142,6 +178,7 @@ func (h *UserHandler) Delete(c echo.Context) error {
 
 	res, err := h.service.Delete(c.Request().Context(), id)
 	if err != nil {
+		h.LogError(c.Request().Context(), fmt.Sprintf("Error to delete user %s: %s", id, err.Error()))
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	if res > 0 {
