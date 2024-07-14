@@ -1,19 +1,21 @@
 package handler
 
 import (
-	"github.com/core-go/core"
-	"github.com/labstack/echo/v4"
-	. "go-service/internal/user/model"
-	. "go-service/internal/user/service"
 	"net/http"
 	"reflect"
+
+	"github.com/core-go/core"
+	"github.com/labstack/echo/v4"
+
+	"go-service/internal/user/model"
+	"go-service/internal/user/service"
 )
 
 type UserHandler struct {
-	service UserService
+	service service.UserService
 }
 
-func NewUserHandler(service UserService) *UserHandler {
+func NewUserHandler(service service.UserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
@@ -42,7 +44,7 @@ func (h *UserHandler) Load(c echo.Context) error {
 }
 
 func (h *UserHandler) Create(c echo.Context) error {
-	var user User
+	var user model.User
 	er1 := c.Bind(&user)
 
 	defer c.Request().Body.Close()
@@ -63,7 +65,7 @@ func (h *UserHandler) Create(c echo.Context) error {
 }
 
 func (h *UserHandler) Update(c echo.Context) error {
-	var user User
+	var user model.User
 	er1 := c.Bind(&user)
 	defer c.Request().Body.Close()
 
@@ -102,7 +104,7 @@ func (h *UserHandler) Patch(c echo.Context) error {
 	}
 
 	r := c.Request()
-	var user User
+	var user model.User
 	userType := reflect.TypeOf(user)
 	_, jsonMap, _ := core.BuildMapField(userType)
 	body, er0 := core.BuildMapAndStruct(r, &user)
