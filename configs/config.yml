@@ -7,11 +7,13 @@ sql:
   data_source_name: postgres://qtqyqrzg:4-fPQ7h10SZk3d6_AkaxSGZ5AjZ6RdWO@satao.db.elephantsql.com/qtqyqrzg
 
 log:
-  level: debug
-  fields: appId,service,mobileNo,creditCard,corrId
+  level: info
   map:
     time: "@timestamp"
     msg: message
+    stacktrace: stacktrace
+    caller: caller
+    function: func
 
 middleware:
   log: true
@@ -30,3 +32,7 @@ middleware:
     corr_id: header.corrId
     email: body.email
     username: body.username
+
+response:
+  id: X-Response-Id
+  correlation: X-Correlation-Id

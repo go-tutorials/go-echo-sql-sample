@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/core-go/core/server"
-	"github.com/core-go/log"
 	l "github.com/core-go/log/echo"
+	"github.com/core-go/log/zap"
 )
 
 type Config struct {

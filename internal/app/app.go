@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"database/sql"
+
 	"github.com/core-go/health/echo"
 	s "github.com/core-go/health/sql"
 
