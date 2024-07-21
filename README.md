@@ -1,1 +1,1 @@
-# go-echo-sql-layer-architecture-sample
+# go-sql-echo-sample

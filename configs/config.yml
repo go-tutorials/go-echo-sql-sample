@@ -1,5 +1,5 @@
 server:
-  name: go-echo-sql-tutorial
+  name: go-sql-echo-sample
   port: 8080
 
 sql:
