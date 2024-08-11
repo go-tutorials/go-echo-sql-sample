@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	Server     server.ServerConf `mapstructure:"server"`
-	Sql        SqlConfig         `mapstructure:"sql"`
-	Log        log.Config        `mapstructure:"log"`
-	MiddleWare l.LogConfig       `mapstructure:"middleware"`
+	Server     server.ServerConfig `mapstructure:"server"`
+	Sql        SqlConfig           `mapstructure:"sql"`
+	Log        log.Config          `mapstructure:"log"`
+	MiddleWare l.LogConfig         `mapstructure:"middleware"`
 }
 type SqlConfig struct {
 	DataSourceName string `yaml:"data_source_name" mapstructure:"data_source_name" json:"dataSourceName,omitempty" gorm:"column:datasourcename" bson:"dataSourceName,omitempty" dynamodbav:"dataSourceName,omitempty" firestore:"dataSourceName,omitempty"`

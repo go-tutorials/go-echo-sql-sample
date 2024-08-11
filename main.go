@@ -24,7 +24,7 @@ func main() {
 
 	e := echo.New()
 	log.Initialize(cfg.Log)
-	logger := mid.NewMaskLogger(cfg.MiddleWare.Request, Mask, Mask)
+	logger := mid.NewMaskLogger(cfg.MiddleWare.Request, Mask, Mask, cfg.MiddleWare.StringFormat)
 	echoLogger := mid.NewEchoLogger(cfg.MiddleWare, log.InfoFields, logger, MaskLog)
 
 	e.Use(echoLogger.BuildContextWithMask)
