@@ -1,4 +1,4 @@
-# go-sql-echo-sample
+# go-echo-sql-sample
 
 #### To run the application
 ```shell
