@@ -4,7 +4,7 @@ server:
 
 sql:
   driver: postgres
-  data_source_name: postgres://qtqyqrzg:4-fPQ7h10SZk3d6_AkaxSGZ5AjZ6RdWO@satao.db.elephantsql.com/qtqyqrzg
+  data_source_name: postgres://postgres:abcd1234@localhost/masterdata?sslmode=disable
 
 log:
   level: info
