@@ -11,7 +11,6 @@ log:
   map:
     time: "@timestamp"
     msg: message
-    stacktrace: stacktrace
     caller: caller
     function: func
 
@@ -22,16 +21,6 @@ middleware:
   response: response
   duration: duration
   size: size
-  masks: mobileNo,creditCard
-  constants:
-    app_id: "123"
-    service: payment
-  map:
-    mobile_no: header.mobileNo
-    credit_card: header.creditCard
-    corr_id: header.corrId
-    email: body.email
-    username: body.username
 
 response:
   id: X-Response-Id
