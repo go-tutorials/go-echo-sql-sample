@@ -27,11 +27,11 @@ func NewUserHandler(service service.UserService, logError func(context.Context, 
 }
 
 func (h *UserHandler) All(c echo.Context) error {
-	res, err := h.service.All(c.Request().Context())
+	users, err := h.service.All(c.Request().Context())
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, users)
 }
 
 func (h *UserHandler) Load(c echo.Context) error {
@@ -40,15 +40,15 @@ func (h *UserHandler) Load(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Id cannot be empty")
 	}
 
-	res, err := h.service.Load(c.Request().Context(), id)
+	user, err := h.service.Load(c.Request().Context(), id)
 	if err != nil {
 		h.Error(c.Request().Context(), fmt.Sprintf("Error to get user %s: %s", id, err.Error()))
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	if res == nil {
-		return c.JSON(http.StatusNotFound, res)
+	if user == nil {
+		return c.JSON(http.StatusNotFound, user)
 	}
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, user)
 }
 
 func (h *UserHandler) Create(c echo.Context) error {
