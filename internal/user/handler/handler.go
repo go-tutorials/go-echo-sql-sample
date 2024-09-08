@@ -20,7 +20,7 @@ type UserHandler struct {
 	Map      map[string]int
 }
 
-func NewUserHandler(service service.UserService, validate func(context.Context, interface{}) ([]core.ErrorMessage, error), logError func(context.Context, string, ...map[string]interface{})) *UserHandler {
+func NewUserHandler(service service.UserService, logError func(context.Context, string, ...map[string]interface{}), validate func(context.Context, interface{}) ([]core.ErrorMessage, error)) *UserHandler {
 	userType := reflect.TypeOf(model.User{})
 	_, jsonMap, _ := core.BuildMapField(userType)
 	return &UserHandler{service: service, Validate: validate, Error: logError, Map: jsonMap}
